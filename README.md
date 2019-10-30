@@ -16,6 +16,6 @@ limits their effective use on resource-constrained devices. Recently there has b
 ###### preparing the presentation of the work - 1 week
 
 #### References
-[1] Frankle, Jonathan, and Michael Carbin. "The lottery ticket hypothesis: Finding sparse, trainable neural networks." arXiv preprint arXiv:1803.03635 (2018).
-[2] Zhou, Hattie, et al. "Deconstructing lottery tickets: Zeros, signs, and the supermask." arXiv preprint arXiv:1905.01067 (2019).
-[3] Liu, Zhuang, et al. "Rethinking the value of network pruning." arXiv preprint arXiv:1810.05270 (2018).
+[1] Frankle, Jonathan, and Michael Carbin. "The lottery ticket hypothesis: Finding sparse, trainable neural networks." arXiv preprint arXiv:1803.03635 (2018).<br/>
+[2] Zhou, Hattie, et al. "Deconstructing lottery tickets: Zeros, signs, and the supermask." arXiv preprint arXiv:1905.01067 (2019).<br/>
+[3] Liu, Zhuang, et al. "Rethinking the value of network pruning." arXiv preprint arXiv:1810.05270 (2018).<br/>
