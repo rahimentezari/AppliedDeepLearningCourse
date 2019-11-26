@@ -47,32 +47,29 @@ def test(args, model, sess, dataset):
     print('Max: {:.5f}, Min: {:.5f} (#Eval: {})'.format(max(acc), min(acc), len(acc)))
     print('Error: {:.3f} %'.format((1 - max(acc))*100))
 
-    # print test outputs
-    sample_input_generator = dataset.generate_sample(mode='test')
-    keys_sample = ['input', 'label']
-    batch_sample = {key: [] for key in keys_sample}
-    for i in range(100):
-        try:
-            example = next(sample_input_generator)
-            for key in keys_sample:
-                batch_sample[key].append(example[key])
-        except StopIteration:
-            empty = True
-    for key in keys_sample:
-        batch_sample[key] = np.stack(batch_sample[key])
-    feed_dict = {}
-    feed_dict.update({model.inputs[key]: batch_sample[key] for key in keys_sample})
-    feed_dict.update({model.compress: False, model.is_train: False, model.pruned: True})
-    print("feed_dict", feed_dict)
-    print("input_label", sess.run([model.inputs['label']], feed_dict))
-    print("prediction_all", sess.run([model.outputs['prediction']], feed_dict))
-    print("sparsity", sess.run([model.sparsity], feed_dict))
+    # # print test outputs
+    # sample_input_generator = dataset.generate_sample(mode='test')
+    # keys_sample = ['input', 'label']
+    # batch_sample = {key: [] for key in keys_sample}
+    # for i in range(100):
+    #     try:
+    #         example = next(sample_input_generator)
+    #         for key in keys_sample:
+    #             batch_sample[key].append(example[key])
+    #     except StopIteration:
+    #         empty = True
+    # for key in keys_sample:
+    #     batch_sample[key] = np.stack(batch_sample[key])
+    # feed_dict = {}
+    # feed_dict.update({model.inputs[key]: batch_sample[key] for key in keys_sample})
+    # feed_dict.update({model.compress: False, model.is_train: False, model.pruned: True})
+    # print("feed_dict", feed_dict)
+    # print("input_label", sess.run([model.inputs['label']], feed_dict))
+    # print("prediction_all", sess.run([model.outputs['prediction']], feed_dict))
+    # print("sparsity", sess.run([model.sparsity], feed_dict))
 
     # test sample input
     sample_input_generator = dataset.generate_sample(mode='test')
-    # sample_input = next(sample_input)
-    # print("sample_input", sample_input)
-
     keys_sample = ['input', 'label']
     batch_sample = {key: [] for key in keys_sample}
     for i in range(10):
@@ -89,6 +86,7 @@ def test(args, model, sess, dataset):
     feed_dict.update({model.compress: False, model.is_train: False, model.pruned: True})
     result = sess.run([model.outputs], feed_dict)
     print("logits", result[0]['logits'])
+    print("input_label", sess.run([model.inputs['label']], feed_dict))
     print("predicted", result[0]['prediction'])
     # for x in batch_sample['input']:
     #     print("sum", x.sum(), x.shape)
@@ -133,7 +131,7 @@ def test(args, model, sess, dataset):
         return explainer.explain_instance(instance, predict_fn, labels, random_seed, **kwargs)
 
     explanation = explain(batch_sample['input'][0], predict_proba, labels=(1,), top_labels=10,
-                          num_features=10, num_samples=1, batch_size=100, distance_metric='cosine',
+                          num_features=10, num_samples=100, batch_size=100, distance_metric='cosine',
                           model_regressor=None, random_seed=42)
     # temp, mask = explanation.get_image_and_mask(batch_sample['label'][0], num_features=10,
     #                                             positive_only=True, hide_rest=True)
