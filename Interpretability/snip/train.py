@@ -10,8 +10,8 @@ def train(args, model, sess, dataset):
     print('|========= START TRAINING =========|')
     if not os.path.isdir(args.path_summary): os.makedirs(args.path_summary)
     if not os.path.isdir(args.path_model): os.makedirs(args.path_model)
-    saver = tf.train.Saver()
-    random_state = np.random.RandomState(9)
+    saver = tf.train.Saver(max_to_keep=None)
+    random_state = np.random.RandomState(42)
     writer = {}
     writer['train'] = tf.summary.FileWriter(args.path_summary + '/train', sess.graph)
     writer['val'] = tf.summary.FileWriter(args.path_summary + '/val')

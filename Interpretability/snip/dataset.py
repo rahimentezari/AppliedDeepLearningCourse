@@ -2,20 +2,9 @@ import os
 import itertools
 import numpy as np
 import cv2
-
+import matplotlib.pyplot as plt
 import mnist
 import cifar
-
-
-# def twodnopad_threedpad(x):
-#     features_3d = np.zeros((x.shape[0], 32, 32, 3))
-#     for i in range(x.shape[0]):
-#         feature_3d = cv2.cvtColor(x[i], cv2.COLOR_GRAY2RGB)
-#         print feature_3d.shape
-#         feature_3d_pad = np.pad(feature_3d, ((0, 0), (2, 2), (2, 2), (0, 0)), 'constant')
-#         features_3d[i] = feature_3d_pad
-#     return features_3d
-#
 
 
 def twodnopad_threedpad(x):
@@ -35,8 +24,9 @@ class Dataset(object):
         if self.datasource == 'mnist':
             self.num_classes = 10
             self.dataset = mnist.read_data(os.path.join(self.path_data, 'MNIST'))
-            print(self.dataset['train']['input'].shape)
-            # print type(self.dataset['train']['input'])
+            # print(self.dataset['train']['input'].shape)
+            # print(self.dataset['train']['input'][0][:][:].shape)
+            plt.imsave('mnist1.png',self.dataset['train']['input'][0][:][:].reshape(28, 28) )
             self.dataset['train']['input'] = twodnopad_threedpad(self.dataset['train']['input'])
             # self.dataset['val']['input'] = twodnopad_threedpad(self.dataset['val']['input'])
             self.dataset['test']['input'] = twodnopad_threedpad(self.dataset['test']['input'])

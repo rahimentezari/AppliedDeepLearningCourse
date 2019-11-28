@@ -13,10 +13,21 @@ from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 from tensorflow.contrib.layers import flatten
 
+from keras.applications.inception_v3 import InceptionV3, preprocess_input, decode_predictions
+from keras.preprocessing.image import load_img, img_to_array
+from lime.lime_image import LimeImageExplainer
+from lime.wrappers.scikit_image import SegmentationAlgorithm
+from skimage.segmentation import mark_boundaries
 import tensorflow as tf
 import numpy as np
+from keras.models import load_model
+from keras.models import Sequential
+from keras.layers import Dense, Conv2D, Dropout, Flatten, MaxPooling2D
 import cv2
-
+from PIL import Image
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 
 def parse_arguments():
@@ -71,11 +82,12 @@ def main():
     sess = tf.InteractiveSession()
     tf.global_variables_initializer().run()
     tf.local_variables_initializer().run()
-
-    # Prune
-    prune.prune(args, model, sess, dataset)
-    # Train and test
-    train.train(args, model, sess, dataset)
+    #
+    # # Prune
+    # prune.prune(args, model, sess, dataset)
+    #
+    # # Train and test
+    # train.train(args, model, sess, dataset)
     test.test(args, model, sess, dataset)
 
 

@@ -56,10 +56,17 @@ def read_data(path_dataset, one_hot=False):
     # Pre-processing (normalize)
     train_images = np.divide(train_images, 255, dtype=np.float32)
     test_images = np.divide(test_images, 255, dtype=np.float32)
+    ## The following lines result in uncertain bounds, but mean of this distribution will be 0, and variance will be 1
     mean = np.mean(train_images)
     std = np.std(train_images)
     train_images = (train_images - mean) / std
     test_images = (test_images - mean) / std
+
+    # ## another normalization method
+    # max = np.max(train_images)
+    # min = np.min(train_images)
+    # train_images = (train_images - min) / (max-min)
+    # test_images = (test_images - min) / (max-min)
 
     dataset = {
         'train': {'input': train_images, 'label': train_labels},
