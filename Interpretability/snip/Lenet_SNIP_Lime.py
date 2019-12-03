@@ -7,7 +7,7 @@ from dataset import Dataset
 from model import Model
 import prune
 import train
-import test
+import test_lime
 import gzip
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
@@ -88,7 +88,7 @@ def main():
     #
     # # Train and test
     # train.train(args, model, sess, dataset)
-    test.test(args, model, sess, dataset)
+    test_lime.test(args, model, sess, dataset)
 
 
 

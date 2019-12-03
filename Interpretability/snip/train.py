@@ -10,7 +10,7 @@ def train(args, model, sess, dataset):
     print('|========= START TRAINING =========|')
     if not os.path.isdir(args.path_summary): os.makedirs(args.path_summary)
     if not os.path.isdir(args.path_model): os.makedirs(args.path_model)
-    saver = tf.train.Saver(max_to_keep=None)
+    saver = tf.train.Saver(max_to_keep=20)
     random_state = np.random.RandomState(42)
     writer = {}
     writer['train'] = tf.summary.FileWriter(args.path_summary + '/train', sess.graph)
@@ -24,13 +24,13 @@ def train(args, model, sess, dataset):
         feed_dict.update({model.inputs[key]: batch[key] for key in ['input', 'label']})
         feed_dict.update({model.compress: False, model.is_train: True, model.pruned: True})
         input_tensors = [model.outputs] # always execute the graph outputs
-        if (itr+1) % args.check_interval == 0:
+        if itr == 0 or (itr+1) % args.check_interval == 0:
             input_tensors.extend([model.summ_op, model.sparsity])
         input_tensors.extend([model.train_op])
         result = sess.run(input_tensors, feed_dict)
 
         # Check on validation set.
-        if (itr+1) % args.check_interval == 0:
+        if itr == 0 or (itr+1) % args.check_interval == 0:
             batch = dataset.get_next_batch('val', args.batch_size)
             batch = augment(batch, args.aug_kinds, random_state)
             feed_dict = {}
@@ -40,7 +40,7 @@ def train(args, model, sess, dataset):
             result_val = sess.run(input_tensors, feed_dict)
 
         # Check summary and print results
-        if (itr+1) % args.check_interval == 0:
+        if itr == 0 or (itr+1) % args.check_interval == 0:
             writer['train'].add_summary(result[1], itr)
             writer['val'].add_summary(result_val[1], itr)
             pstr = '(train/val) los:{:.3f}/{:.3f} acc:{:.3f}/{:.3f} spa:{:.3f}'.format(
@@ -52,5 +52,5 @@ def train(args, model, sess, dataset):
             t_start = time.time()
 
         # Save model
-        if (itr+1) % args.save_interval == 0:
+        if itr == 0 or (itr+1) % args.save_interval == 0:
             saver.save(sess, args.path_model + '/itr-' + str(itr))

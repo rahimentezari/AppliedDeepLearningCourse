@@ -1,0 +1,58 @@
+WARNING:tensorflow:From /home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/model.py:115: softmax_cross_entropy_with_logits (from tensorflow.python.ops.nn_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+
+Future major versions of TensorFlow will allow gradients to flow
+into the labels input on backprop by default.
+
+See `tf.nn.softmax_cross_entropy_with_logits_v2`.
+
+WARNING:tensorflow:From /home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/model.py:182: sparse_to_dense (from tensorflow.python.ops.sparse_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Create a `tf.sparse.SparseTensor` and use `tf.sparse.to_dense` instead.
+2019-12-03 11:11:57.564550: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2019-12-03 11:11:58.119042: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1432] Found device 0 with properties: 
+name: Tesla K80 major: 3 minor: 7 memoryClockRate(GHz): 0.8235
+pciBusID: 0000:06:00.0
+totalMemory: 11.17GiB freeMemory: 11.10GiB
+2019-12-03 11:11:58.119075: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1511] Adding visible gpu devices: 0
+2019-12-03 11:11:58.408046: I tensorflow/core/common_runtime/gpu/gpu_device.cc:982] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-12-03 11:11:58.408092: I tensorflow/core/common_runtime/gpu/gpu_device.cc:988]      0 
+2019-12-03 11:11:58.408098: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 0:   N 
+2019-12-03 11:11:58.408422: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 10758 MB memory) -> physical GPU (device: 0, name: Tesla K80, pci bus id: 0000:06:00.0, compute capability: 3.7)
+('mean, std', 0.13066062, 0.30810776)
+("self.dataset['train']['input'].shape", (60000, 32, 32, 3))
+|========= START TEST =========|
+('args.path_model', 'logs/model')
+logs/model/itr-0
+logs/model/itr-999
+logs/model/itr-1999
+logs/model/itr-2999
+logs/model/itr-3999
+logs/model/itr-4999
+logs/model/itr-5999
+logs/model/itr-6999
+logs/model/itr-7999
+logs/model/itr-8999
+logs/model/itr-9999
+('model_files', {0: u'logs/model/itr-0', 7999: u'logs/model/itr-7999', 4999: u'logs/model/itr-4999', 9999: u'logs/model/itr-9999', 999: u'logs/model/itr-999', 1999: u'logs/model/itr-1999', 8999: u'logs/model/itr-8999', 6999: u'logs/model/itr-6999', 2999: u'logs/model/itr-2999', 5999: u'logs/model/itr-5999', 3999: u'logs/model/itr-3999'})
+('itrs', [0, 999, 1999, 2999, 3999, 4999, 5999, 6999, 7999, 8999, 9999])
+evaluation: mnist | itr-0
+logs/assess/mnist/itr-0.json
+Traceback (most recent call last):
+  File "Lenet_SNIP.py", line 85, in <module>
+    main()
+  File "Lenet_SNIP.py", line 79, in main
+    test.test(args, model, sess, dataset)
+  File "/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/test.py", line 43, in test
+    makedir=True)
+  File "/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/helpers.py", line 16, in cache_json
+    result = json.load(r)
+  File "/usr/lib/python2.7/json/__init__.py", line 291, in load
+    **kw)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 380, in raw_decode
+    obj, end = self.scan_once(s, idx)
+ValueError: Expecting object: line 1 column 35 (char 34)

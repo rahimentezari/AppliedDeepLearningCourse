@@ -1,0 +1,142 @@
+WARNING:tensorflow:From /home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/model.py:115: softmax_cross_entropy_with_logits (from tensorflow.python.ops.nn_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+
+Future major versions of TensorFlow will allow gradients to flow
+into the labels input on backprop by default.
+
+See `tf.nn.softmax_cross_entropy_with_logits_v2`.
+
+WARNING:tensorflow:From /home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/model.py:182: sparse_to_dense (from tensorflow.python.ops.sparse_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Create a `tf.sparse.SparseTensor` and use `tf.sparse.to_dense` instead.
+2019-12-03 10:57:19.195885: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2019-12-03 10:57:19.746173: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1432] Found device 0 with properties: 
+name: Tesla K80 major: 3 minor: 7 memoryClockRate(GHz): 0.8235
+pciBusID: 0000:06:00.0
+totalMemory: 11.17GiB freeMemory: 11.10GiB
+2019-12-03 10:57:19.746206: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1511] Adding visible gpu devices: 0
+2019-12-03 10:57:20.039418: I tensorflow/core/common_runtime/gpu/gpu_device.cc:982] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-12-03 10:57:20.039457: I tensorflow/core/common_runtime/gpu/gpu_device.cc:988]      0 
+2019-12-03 10:57:20.039464: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 0:   N 
+2019-12-03 10:57:20.039764: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 10758 MB memory) -> physical GPU (device: 0, name: Tesla K80, pci bus id: 0000:06:00.0, compute capability: 3.7)
+('mean, std', 0.13066062, 0.30810776)
+("self.dataset['train']['input'].shape", (60000, 32, 32, 3))
+|========= START PRUNING =========|
+Pruning: 0.990 global sparsity (t:0.9)
+|========= START TRAINING =========|
+itr1: (train/val) los:2.304/2.304 acc:0.060/0.050 spa:0.990 (t:0.2)
+itr100: (train/val) los:2.304/2.304 acc:0.090/0.120 spa:0.990 (t:1.3)
+itr200: (train/val) los:2.304/2.304 acc:0.120/0.110 spa:0.990 (t:1.1)
+itr300: (train/val) los:2.304/2.304 acc:0.080/0.060 spa:0.990 (t:1.2)
+itr400: (train/val) los:2.304/2.304 acc:0.070/0.120 spa:0.990 (t:1.2)
+itr500: (train/val) los:2.304/2.304 acc:0.130/0.100 spa:0.990 (t:1.2)
+itr600: (train/val) los:2.304/2.304 acc:0.110/0.110 spa:0.990 (t:1.2)
+itr700: (train/val) los:2.304/2.304 acc:0.080/0.090 spa:0.990 (t:1.1)
+itr800: (train/val) los:2.304/2.304 acc:0.100/0.090 spa:0.990 (t:1.1)
+itr900: (train/val) los:2.304/2.304 acc:0.100/0.100 spa:0.990 (t:1.1)
+itr1000: (train/val) los:2.303/2.303 acc:0.140/0.130 spa:0.990 (t:1.1)
+itr1100: (train/val) los:2.304/2.303 acc:0.080/0.120 spa:0.990 (t:1.2)
+itr1200: (train/val) los:2.303/2.303 acc:0.160/0.130 spa:0.990 (t:1.2)
+itr1300: (train/val) los:2.303/2.303 acc:0.080/0.080 spa:0.990 (t:1.2)
+itr1400: (train/val) los:2.301/2.302 acc:0.100/0.060 spa:0.990 (t:1.2)
+itr1500: (train/val) los:2.284/2.257 acc:0.050/0.110 spa:0.990 (t:1.1)
+itr1600: (train/val) los:2.204/2.092 acc:0.150/0.210 spa:0.990 (t:1.2)
+itr1700: (train/val) los:2.033/1.940 acc:0.260/0.200 spa:0.990 (t:1.2)
+itr1800: (train/val) los:1.730/1.854 acc:0.340/0.240 spa:0.990 (t:1.1)
+itr1900: (train/val) los:1.698/1.658 acc:0.280/0.410 spa:0.990 (t:1.1)
+itr2000: (train/val) los:1.417/1.598 acc:0.400/0.280 spa:0.990 (t:1.1)
+itr2100: (train/val) los:1.589/1.340 acc:0.350/0.440 spa:0.990 (t:1.2)
+itr2200: (train/val) los:1.403/1.616 acc:0.380/0.350 spa:0.990 (t:1.2)
+itr2300: (train/val) los:1.382/1.453 acc:0.420/0.510 spa:0.990 (t:1.2)
+itr2400: (train/val) los:1.372/1.409 acc:0.480/0.480 spa:0.990 (t:1.2)
+itr2500: (train/val) los:1.365/2.020 acc:0.450/0.370 spa:0.990 (t:1.2)
+itr2600: (train/val) los:1.181/1.205 acc:0.460/0.590 spa:0.990 (t:1.2)
+itr2700: (train/val) los:1.087/1.079 acc:0.630/0.570 spa:0.990 (t:1.2)
+itr2800: (train/val) los:1.345/1.409 acc:0.520/0.580 spa:0.990 (t:1.1)
+itr2900: (train/val) los:1.125/1.105 acc:0.630/0.610 spa:0.990 (t:1.1)
+itr3000: (train/val) los:1.134/1.033 acc:0.650/0.670 spa:0.990 (t:1.2)
+itr3100: (train/val) los:0.968/0.868 acc:0.680/0.690 spa:0.990 (t:1.2)
+itr3200: (train/val) los:1.005/0.921 acc:0.670/0.680 spa:0.990 (t:1.1)
+itr3300: (train/val) los:1.325/1.110 acc:0.570/0.620 spa:0.990 (t:1.2)
+itr3400: (train/val) los:1.066/1.143 acc:0.660/0.580 spa:0.990 (t:1.2)
+itr3500: (train/val) los:1.768/1.676 acc:0.430/0.540 spa:0.990 (t:1.1)
+itr3600: (train/val) los:0.916/0.823 acc:0.690/0.700 spa:0.990 (t:1.1)
+itr3700: (train/val) los:0.895/1.024 acc:0.750/0.660 spa:0.990 (t:1.2)
+itr3800: (train/val) los:0.849/1.289 acc:0.720/0.650 spa:0.990 (t:1.2)
+itr3900: (train/val) los:1.108/0.871 acc:0.660/0.750 spa:0.990 (t:1.1)
+itr4000: (train/val) los:0.843/0.860 acc:0.730/0.680 spa:0.990 (t:1.1)
+itr4100: (train/val) los:0.988/0.965 acc:0.670/0.690 spa:0.990 (t:1.2)
+itr4200: (train/val) los:0.717/0.669 acc:0.820/0.800 spa:0.990 (t:1.2)
+itr4300: (train/val) los:0.837/0.800 acc:0.700/0.750 spa:0.990 (t:1.1)
+itr4400: (train/val) los:0.730/0.510 acc:0.770/0.880 spa:0.990 (t:1.2)
+itr4500: (train/val) los:0.665/0.622 acc:0.800/0.790 spa:0.990 (t:1.2)
+itr4600: (train/val) los:0.731/0.817 acc:0.770/0.760 spa:0.990 (t:1.2)
+itr4700: (train/val) los:0.853/0.680 acc:0.760/0.850 spa:0.990 (t:1.2)
+itr4800: (train/val) los:0.780/0.683 acc:0.790/0.770 spa:0.990 (t:1.2)
+itr4900: (train/val) los:0.700/0.810 acc:0.750/0.740 spa:0.990 (t:1.2)
+itr5000: (train/val) los:0.709/0.750 acc:0.770/0.730 spa:0.990 (t:1.1)
+itr5100: (train/val) los:0.861/0.843 acc:0.750/0.740 spa:0.990 (t:1.2)
+itr5200: (train/val) los:0.915/0.913 acc:0.720/0.730 spa:0.990 (t:1.2)
+itr5300: (train/val) los:0.639/0.621 acc:0.800/0.800 spa:0.990 (t:1.2)
+itr5400: (train/val) los:0.744/0.588 acc:0.740/0.830 spa:0.990 (t:1.2)
+itr5500: (train/val) los:0.670/0.627 acc:0.780/0.830 spa:0.990 (t:1.2)
+itr5600: (train/val) los:1.178/0.838 acc:0.620/0.760 spa:0.990 (t:1.2)
+itr5700: (train/val) los:0.694/0.659 acc:0.780/0.800 spa:0.990 (t:1.2)
+itr5800: (train/val) los:0.628/0.730 acc:0.800/0.770 spa:0.990 (t:1.2)
+itr5900: (train/val) los:0.442/0.643 acc:0.860/0.840 spa:0.990 (t:1.2)
+itr6000: (train/val) los:0.568/0.760 acc:0.850/0.800 spa:0.990 (t:1.2)
+itr6100: (train/val) los:0.780/0.733 acc:0.820/0.730 spa:0.990 (t:1.3)
+itr6200: (train/val) los:0.964/0.999 acc:0.700/0.680 spa:0.990 (t:1.2)
+itr6300: (train/val) los:0.687/0.668 acc:0.820/0.800 spa:0.990 (t:1.2)
+itr6400: (train/val) los:0.575/0.732 acc:0.830/0.790 spa:0.990 (t:1.2)
+itr6500: (train/val) los:0.876/0.701 acc:0.760/0.830 spa:0.990 (t:1.2)
+itr6600: (train/val) los:0.735/0.764 acc:0.750/0.760 spa:0.990 (t:1.2)
+itr6700: (train/val) los:0.989/0.732 acc:0.650/0.770 spa:0.990 (t:1.2)
+itr6800: (train/val) los:0.634/0.678 acc:0.790/0.790 spa:0.990 (t:1.2)
+itr6900: (train/val) los:0.718/0.691 acc:0.820/0.800 spa:0.990 (t:1.2)
+itr7000: (train/val) los:0.652/0.701 acc:0.840/0.800 spa:0.990 (t:1.2)
+itr7100: (train/val) los:0.825/0.684 acc:0.780/0.770 spa:0.990 (t:1.3)
+itr7200: (train/val) los:0.675/0.543 acc:0.790/0.820 spa:0.990 (t:1.2)
+itr7300: (train/val) los:0.445/0.542 acc:0.880/0.840 spa:0.990 (t:1.2)
+itr7400: (train/val) los:0.888/0.651 acc:0.740/0.770 spa:0.990 (t:1.2)
+itr7500: (train/val) los:0.824/0.622 acc:0.780/0.830 spa:0.990 (t:1.2)
+itr7600: (train/val) los:0.676/0.778 acc:0.840/0.690 spa:0.990 (t:1.2)
+itr7700: (train/val) los:0.699/0.656 acc:0.820/0.810 spa:0.990 (t:1.2)
+itr7800: (train/val) los:0.575/0.725 acc:0.810/0.740 spa:0.990 (t:1.2)
+itr7900: (train/val) los:0.663/0.638 acc:0.840/0.830 spa:0.990 (t:1.2)
+itr8000: (train/val) los:0.624/0.561 acc:0.810/0.780 spa:0.990 (t:1.2)
+itr8100: (train/val) los:0.548/0.635 acc:0.860/0.810 spa:0.990 (t:1.3)
+itr8200: (train/val) los:0.318/0.542 acc:0.930/0.810 spa:0.990 (t:1.2)
+itr8300: (train/val) los:0.665/0.816 acc:0.800/0.770 spa:0.990 (t:1.2)
+itr8400: (train/val) los:0.680/0.449 acc:0.840/0.850 spa:0.990 (t:1.2)
+itr8500: (train/val) los:0.491/0.532 acc:0.820/0.860 spa:0.990 (t:1.2)
+itr8600: (train/val) los:0.711/0.497 acc:0.780/0.870 spa:0.990 (t:1.2)
+itr8700: (train/val) los:0.808/0.700 acc:0.710/0.780 spa:0.990 (t:1.2)
+itr8800: (train/val) los:0.764/0.734 acc:0.820/0.740 spa:0.990 (t:1.2)
+itr8900: (train/val) los:0.817/0.830 acc:0.790/0.790 spa:0.990 (t:1.2)
+itr9000: (train/val) los:0.751/1.080 acc:0.770/0.650 spa:0.990 (t:1.2)
+itr9100: (train/val) los:0.778/0.725 acc:0.750/0.760 spa:0.990 (t:1.3)
+itr9200: (train/val) los:0.788/0.563 acc:0.770/0.830 spa:0.990 (t:1.2)
+itr9300: (train/val) los:0.528/0.558 acc:0.830/0.840 spa:0.990 (t:1.2)
+itr9400: (train/val) los:0.936/0.891 acc:0.730/0.750 spa:0.990 (t:1.2)
+itr9500: (train/val) los:0.372/0.734 acc:0.920/0.780 spa:0.990 (t:1.2)
+itr9600: (train/val) los:0.538/0.463 acc:0.760/0.880 spa:0.990 (t:1.2)
+itr9700: (train/val) los:0.567/0.599 acc:0.830/0.840 spa:0.990 (t:1.2)
+itr9800: (train/val) los:0.371/0.617 acc:0.880/0.800 spa:0.990 (t:1.2)
+itr9900: (train/val) los:0.501/0.679 acc:0.840/0.800 spa:0.990 (t:1.2)
+itr10000: (train/val) los:0.857/0.675 acc:0.720/0.840 spa:0.990 (t:1.2)
+|========= START TEST =========|
+('args.path_model', 'logs/model')
+logs/model/itr-0
+logs/model/itr-999
+logs/model/itr-1999
+logs/model/itr-2999
+logs/model/itr-3999
+logs/model/itr-4999
+logs/model/itr-5999
+logs/model/itr-6999
+logs/model/itr-7999
+logs/model/itr-8999
+logs/model/itr-9999
+('model_files', {0: u'logs/model/itr-0', 7999: u'logs/model/itr-7999', 4999: u'logs/model/itr-4999', 9999: u'logs/model/itr-9999', 999: u'logs/model/itr-999', 1999: u'logs/model/itr-1999', 8999: u'logs/model/itr-8999', 6999: u'logs/model/itr-6999', 2999: u'logs/model/itr-2999', 5999: u'logs/model/itr-5999', 3999: u'logs/model/itr-3999'})
+('itrs', [0, 999, 1999, 2999, 3999, 4999, 5999, 6999, 7999, 8999, 9999])

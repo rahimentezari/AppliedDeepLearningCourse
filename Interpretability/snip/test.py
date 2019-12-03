@@ -7,7 +7,7 @@ from helpers import cache_json
 
 def test(args, model, sess, dataset):
     print('|========= START TEST =========|')
-    saver = tf.train.Saver(max_to_keep=None)
+    saver = tf.train.Saver(max_to_keep=20)
     # Identify which checkpoints are available.
     state = tf.train.get_checkpoint_state(args.path_model)
     print("args.path_model", args.path_model)
@@ -18,6 +18,7 @@ def test(args, model, sess, dataset):
     itrs = sorted(model_files.keys())
     print("itrs", itrs)
 
+    # # if max_to_keep=None only uses the last checkpoint, we set max_to_keep=20
     # model_files = {1999: u'logs/model/itr-1999', 2999: u'logs/model/itr-2999', 3999: u'logs/model/itr-3999',
     #                4999: u'logs/model/itr-4999', 5999: u'logs/model/itr-5999', 6999: u'logs/model/itr-6999',
     #                7999: u'logs/model/itr-7999', 8999: u'logs/model/itr-8999', 9999: u'logs/model/itr-9999',
@@ -33,6 +34,7 @@ def test(args, model, sess, dataset):
     for itr in itr_subset:
         print('evaluation: {} | itr-{}'.format(dataset.datasource, itr))
         # run evaluate and/or cache
+        print(os.path.join(args.path_assess, dataset.datasource, 'itr-{}.json'.format(itr)))
         result = cache_json(
             os.path.join(args.path_assess, dataset.datasource, 'itr-{}.json'.format(itr)),
             lambda: _evaluate(

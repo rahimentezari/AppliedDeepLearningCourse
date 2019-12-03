@@ -59,6 +59,8 @@ def read_data(path_dataset, one_hot=False):
     ## The following lines result in uncertain bounds, but mean of this distribution will be 0, and variance will be 1
     mean = np.mean(train_images)
     std = np.std(train_images)
+    print("mean, std", mean, std)  ##('mean, std', 0.13066062, 0.30810776)
+
     train_images = (train_images - mean) / std
     test_images = (test_images - mean) / std
 
