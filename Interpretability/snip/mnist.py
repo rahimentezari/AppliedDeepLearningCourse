@@ -64,6 +64,10 @@ def read_data(path_dataset, one_hot=False):
     train_images = (train_images - mean) / std
     test_images = (test_images - mean) / std
 
+    mean = np.mean(train_images)
+    std = np.std(train_images)
+    print("after_normalization_mean, std", mean, std)  ##('mean, std', -5.1035363e-07, 0.99999946)
+
     # ## another normalization method
     # max = np.max(train_images)
     # min = np.min(train_images)

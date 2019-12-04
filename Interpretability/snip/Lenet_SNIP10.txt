@@ -1,0 +1,21 @@
+WARNING:tensorflow:From /home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/model.py:115: softmax_cross_entropy_with_logits (from tensorflow.python.ops.nn_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+
+Future major versions of TensorFlow will allow gradients to flow
+into the labels input on backprop by default.
+
+See `tf.nn.softmax_cross_entropy_with_logits_v2`.
+
+WARNING:tensorflow:From /home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/model.py:182: sparse_to_dense (from tensorflow.python.ops.sparse_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Create a `tf.sparse.SparseTensor` and use `tf.sparse.to_dense` instead.
+2019-12-04 12:13:23.549664: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2019-12-04 12:13:24.100312: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1432] Found device 0 with properties: 
+name: Tesla K80 major: 3 minor: 7 memoryClockRate(GHz): 0.8235
+pciBusID: 0000:06:00.0
+totalMemory: 11.17GiB freeMemory: 11.10GiB
+2019-12-04 12:13:24.100345: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1511] Adding visible gpu devices: 0
+2019-12-04 12:13:24.396551: I tensorflow/core/common_runtime/gpu/gpu_device.cc:982] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-12-04 12:13:24.396592: I tensorflow/core/common_runtime/gpu/gpu_device.cc:988]      0 
+2019-12-04 12:13:24.396598: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 0:   N 
+2019-12-04 12:13:24.396929: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 10758 MB memory) -> physical GPU (device: 0, name: Tesla K80, pci bus id: 0000:06:00.0, compute capability: 3.7)

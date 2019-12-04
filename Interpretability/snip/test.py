@@ -19,12 +19,6 @@ def test(args, model, sess, dataset):
     print("itrs", itrs)
 
     # # if max_to_keep=None only uses the last checkpoint, we set max_to_keep=20
-    # model_files = {1999: u'logs/model/itr-1999', 2999: u'logs/model/itr-2999', 3999: u'logs/model/itr-3999',
-    #                4999: u'logs/model/itr-4999', 5999: u'logs/model/itr-5999', 6999: u'logs/model/itr-6999',
-    #                7999: u'logs/model/itr-7999', 8999: u'logs/model/itr-8999', 9999: u'logs/model/itr-9999',
-    #                }
-    # itrs = sorted(model_files.keys())
-    # print("itrs", itrs)
 
     # Subset of iterations.
     itr_subset = itrs
@@ -87,7 +81,7 @@ def _evaluate(model, saver, model_file, sess, dataset, batch_size):
 
     results = { # has to be JSON serialiazable
         'accuracy': np.mean(accuracy).astype(float),
-        'tf.equal(label, output_class)': accuracy,
+        # 'tf.equal(label, output_class)': accuracy,
         'num_example': len(accuracy),
     }
     assert results['num_example'] == dataset.dataset['test']['input'].shape[0]

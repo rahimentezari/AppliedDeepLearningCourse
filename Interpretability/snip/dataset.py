@@ -26,7 +26,7 @@ class Dataset(object):
             self.dataset = mnist.read_data(os.path.join(self.path_data, 'MNIST'))
             # print(self.dataset['train']['input'].shape)
             # print(self.dataset['train']['input'][0][:][:].shape)
-            plt.imsave('mnist1.png',self.dataset['train']['input'][0][:][:].reshape(28, 28) )
+            # plt.imsave('mnist1.png',self.dataset['train']['input'][0][:][:].reshape(28, 28) )
             self.dataset['train']['input'] = twodnopad_threedpad(self.dataset['train']['input'])
             # self.dataset['val']['input'] = twodnopad_threedpad(self.dataset['val']['input'])
             self.dataset['test']['input'] = twodnopad_threedpad(self.dataset['test']['input'])

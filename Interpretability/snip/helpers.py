@@ -19,6 +19,7 @@ def cache_json(filename, func, makedir=False):
             if not os.path.exists(os.path.dirname(filename)):
                 os.makedirs(os.path.dirname(filename))
         result = func()
+        # print("helpers.cache_json", result)
         with open(filename, 'w') as w:
             json.dump(result, w)
     return result
