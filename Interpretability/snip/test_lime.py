@@ -32,7 +32,7 @@ def test(args, model, sess, dataset):
     # model_files = {9999: u'logs/model/itr-9999'
     #                }
     # itrs = sorted(model_files.keys()) ## all checkpoint
-    itrs = [sorted(model_files.keys())[2]]
+    itrs = [sorted(model_files.keys())[9]]
     print("itrs", itrs)
 
     # Subset of iterations.
@@ -138,7 +138,7 @@ def test(args, model, sess, dataset):
     random_seed = 42
     # random_seed = np.random.seed(42)# if use this, error with Segmentation(line290): TypeError: an integer is required
     explainer = lime.lime_image.LimeImageExplainer(feature_selection='auto', random_state=random_seed)
-    segmenter = SegmentationAlgorithm('quickshift', kernel_size=2, max_dist=10, ratio=0.2, random_seed=random_seed) # https://kite.com/python/docs/skimage.segmentation.quickshift
+    segmenter = SegmentationAlgorithm('quickshift', kernel_size=4, max_dist=10, ratio=0.2, random_seed=random_seed) # https://kite.com/python/docs/skimage.segmentation.quickshift
     # # How segmentaion used in purturbation : we want 100 purturbted images. For each of these 100 images, we use a [0,1] mask to create such image. 100 * num_superpixels
 
     print("batch_sample['label'][0]", batch_sample['label'][0])
@@ -147,13 +147,16 @@ def test(args, model, sess, dataset):
     def explain(instance, predict_fn, labels, **kwargs):
         return explainer.explain_instance(instance, predict_fn, labels, random_seed, **kwargs)
 
-    explanation = explain(batch_sample['input'][0], predict_proba, labels=(1,), top_labels=10,
+    # ### for 7 batch_sample['input'][0], and for 2 batch_sample['input'][1] #################
+    explanation = explain(batch_sample['input'][1], predict_proba, labels=(1,), top_labels=10,
                           num_features=10, num_samples=100, batch_size=100, distance_metric='cosine',
                           model_regressor=None, random_seed=42, segmentation_fn=segmenter)
-    temp, mask = explanation.get_image_and_mask(batch_sample['label'][0], num_features=10,
-                                                positive_only=True, hide_rest=True)
-    # print("temp", temp)
-    # print("mask", mask)
+    temp, mask = explanation.get_image_and_mask(batch_sample['label'][1], num_features=10, positive_only=True,
+                                                negative_only=False, hide_rest=False)
+
+    # #### negatve only = postive only. it just rever 0,1 s in mask.
+
+    print("temp, mask", temp.shape, mask.shape)
     mnist_mu = 0.13066062
     mnist_sigma = 0.30810776
     non_normallized_temp = (temp * mnist_sigma) + mnist_mu
@@ -163,7 +166,10 @@ def test(args, model, sess, dataset):
     # print("non_normallized_temp", non_normallized_temp.min(), non_normallized_temp.max())
     # print("mask_min", mask.min())
 
-    plt.imsave('./Output_LIME/Ks_2_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP50_2KTrain.png', mark_boundaries(non_normallized_temp, mask))
+    np.savetxt('./Output_LIME_2/Ks_4_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP001_9KTrain_mask_HideRestF_negative_only.txt',mask)
+    plt.imsave('./Output_LIME_2/Ks_4_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP001_9KTrain_temp_HideRestF_negative_only.png',non_normallized_temp)
+
+    plt.imsave('./Output_LIME_2/Ks_4_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP001_9KTrain_HideRestF_negative_only.png', mark_boundaries(non_normallized_temp, mask))
 
 
 

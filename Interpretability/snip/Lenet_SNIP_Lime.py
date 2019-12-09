@@ -83,11 +83,11 @@ def main():
     tf.global_variables_initializer().run()
     tf.local_variables_initializer().run()
     #
-    # # Prune
-    # prune.prune(args, model, sess, dataset)
-    #
-    # # Train and test
-    # train.train(args, model, sess, dataset)
+    # Prune
+    prune.prune(args, model, sess, dataset)
+
+    # Train and test
+    train.train(args, model, sess, dataset)
     test_lime.test(args, model, sess, dataset)
 
 
