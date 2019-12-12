@@ -11,7 +11,7 @@ import lime
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-
+import pickle
 
 
 def test(args, model, sess, dataset):
@@ -109,144 +109,82 @@ def test(args, model, sess, dataset):
 
     saver = tf.train.Saver()
     sum_mask_diff = []
-    for i in range(2):
-        # ####################################################################################### ORG model (no pruning)
-        args.path_summary = os.path.join('/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/'
-                                         'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/logs_001',
-                                         'summary')
-        args.path_model = os.path.join('/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/'
-                                       'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/logs_001',
-                                       'model')
-        args.path_assess = os.path.join('/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/'
-                                        'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/logs_001',
-                                        'assess')
-
-        state = tf.train.get_checkpoint_state(args.path_model)
-        model_files_org = {int(s[s.index('itr') + 4:]): s for s in state.all_model_checkpoint_paths}
-
-        itr = sorted(model_files_org.keys())[9] # ### acc = 99.12%
-        saver.restore(sess, model_files_org[itr])
-
-        # ### Gets the explanation
-        explanation = explain(batch_sample['input'][i], predict_proba, labels=(1,), top_labels=10,
-                              num_features=10, num_samples=100, batch_size=100, distance_metric='cosine',
-                              model_regressor=None, random_seed=42, segmentation_fn=segmenter)
-        temp_org, mask_org = explanation.get_image_and_mask(batch_sample['label'][i], num_features=10, negative_only=True,
-                                                    positive_only=False, hide_rest=True)
-        mask_path = './logs/mask_lime_1K'
-        if not os.path.exists(mask_path):
-            os.mkdir(mask_path)
-        np.savetxt(
-            mask_path + '/ORG_Ks_4_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP10_9KTrain_mask_HideRestF_negative_only' +
-            str(batch_sample['label'][i]) + "_" + str(i) + '.txt',
-            mask_org)
-        # ################################################################################################# Pruned model
-        sess.run(tf.global_variables_initializer())
+    masks_org = []
+    masks_pruned = []
+    # for i in range(100):
+    #     # ####################################################################################### ORG model (no pruning)
+    #     args.path_summary = os.path.join('/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/'
+    #                                      'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/logs_001',
+    #                                      'summary')
+    #     args.path_model = os.path.join('/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/'
+    #                                    'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/logs_001',
+    #                                    'model')
+    #     args.path_assess = os.path.join('/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/'
+    #                                     'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/logs_001',
+    #                                     'assess')
+    #
+    #     state = tf.train.get_checkpoint_state(args.path_model)
+    #     model_files_org = {int(s[s.index('itr') + 4:]): s for s in state.all_model_checkpoint_paths}
+    #
+    #     itr = sorted(model_files_org.keys())[9] # ### acc = 99.12%
+    #     saver.restore(sess, model_files_org[itr])
+    #
+    #     # ### Gets the explanation
+    #     explanation = explain(batch_sample['input'][i], predict_proba, labels=(1,), top_labels=10,
+    #                           num_features=10, num_samples=100, batch_size=100, distance_metric='cosine',
+    #                           model_regressor=None, random_seed=42, segmentation_fn=segmenter)
+    #     temp_org, mask_org = explanation.get_image_and_mask(batch_sample['label'][i], num_features=10, negative_only=True,
+    #                                                 positive_only=False, hide_rest=True)
+    #     masks_org.append(mask_org)
+    #     mask_path = './logs/mask_lime_1K'
+    #     if not os.path.exists(mask_path):
+    #         os.mkdir(mask_path)
+    #     np.savetxt(
+    #         mask_path + '/ORG_Ks_4_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP001_9KTrain_mask_HideRestF_negative_only' +
+    #         str(batch_sample['label'][i]) + "_" + str(i) + '.txt',
+    #         mask_org)
+    # with open(mask_path + '/masks_org.pk', 'wb') as fp:
+    #     pickle.dump(masks_org, fp)
+    # ##################################################################################################### Pruned model
+    for i in range(100):
         state = tf.train.get_checkpoint_state(args.path_model)
         model_files = {int(s[s.index('itr')+4:]): s for s in state.all_model_checkpoint_paths}
 
-        itr = sorted(model_files.keys())[10]
+        itr = sorted(model_files.keys())[0]
         saver.restore(sess, model_files[itr])
-
-        # Subset of iterations.
-        itr_subset = [itr]
-        assert itr_subset
-        # Evaluate.
-        acc = []
-        for itr in itr_subset:
-            print('evaluation: {} | itr-{}'.format(dataset.datasource, itr))
-            # run evaluate and/or cache
-            result = cache_json(
-                os.path.join(args.path_assess, dataset.datasource, 'itr-{}.json'.format(itr)),
-                lambda: _evaluate(
-                    model, saver, model_files[itr], sess,
-                    dataset, args.batch_size),
-                makedir=True)
-            # print('Accuracy: {:.5f} (#examples:{})'.format(result['accuracy'], result['num_example']))
-            acc.append(result['accuracy'])
-            # print(result) this will print accuracy along with the tf.equal(label, output_class)
-            # print(_evaluate(
-            #         model, saver, model_files[itr], sess,
-            #         dataset, args.batch_size))
-        print('Max: {:.5f}, Min: {:.5f} (#Eval: {})'.format(max(acc), min(acc), len(acc)))
-        print('Error: {:.3f} %'.format((1 - max(acc))*100))
 
         # ### Gets the explanation
         explanation = explain(batch_sample['input'][i], predict_proba, labels=(1,), top_labels=10,
                               num_features=10, num_samples=100, batch_size=100, distance_metric='cosine',
                               model_regressor=None, random_seed=42, segmentation_fn=segmenter)
         temp, mask = explanation.get_image_and_mask(batch_sample['label'][i], num_features=10, negative_only=True,
-                                                    positive_only=False, hide_rest=True)
+                                                   positive_only=False, hide_rest=True)
+        masks_pruned.append(mask)
 
+        mask_path = './logs/mask_lime_0K'
+        if not os.path.exists(mask_path):
+            os.mkdir(mask_path)
         np.savetxt(
-            mask_path + '/Pruned_Ks_4_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP991_1KTrain_mask_HideRestF_negative_only' +
+            mask_path + '/Pruned_Ks_4_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP99_0KTrain_mask_HideRestF_negative_only' +
             str(batch_sample['label'][i]) + "_" + str(i) + '.txt',
             mask)
 
-        # ### compare the explanations for only mask
-        mask_org_bool = mask_org.astype(bool)
-        mask_bool = mask.astype(bool)
-
+    # ### compare the explanations for only mask
+    with open(mask_path + '/masks_org.pk', 'rb') as fp:
+        masks_org = pickle.load(fp)
+    for x, y in zip(masks_org, masks_pruned):
+        mask_org_bool = x.astype(bool)
+        mask_bool = y.astype(bool)
         one_sample_diff = np.logical_xor(mask_org_bool, mask_bool).astype(int).sum()
-        print("i, one_sample_diff", i, one_sample_diff)
         sum_mask_diff.append(one_sample_diff)
+    print("LIST_sum_mask_diff", sum_mask_diff)
     mean = statistics.mean(sum_mask_diff)
     std = statistics.stdev(sum_mask_diff)
-    print("LIST_sum_mask_diff", sum_mask_diff)
     print("mean, std", mean, std)
 
 
 
 
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    # for i in range(100):
-    #     print("== == == == == purturbation started!== == == == ==")
-    #     explanation = explain(batch_sample['input'][i], predict_proba, labels=(1,), top_labels=10,
-    #                           num_features=10, num_samples=100, batch_size=100, distance_metric='cosine',
-    #                           model_regressor=None, random_seed=42, segmentation_fn=segmenter)
-    #     temp, mask = explanation.get_image_and_mask(batch_sample['label'][i], num_features=10, negative_only=True,
-    #                                                 positive_only=False, hide_rest=True)
-    #
-    #
-    #
-    # random_seed = 42
-    # # random_seed = np.random.seed(42)# if use this, error with Segmentation(line290): TypeError: an integer is required
-    # explainer = lime.lime_image.LimeImageExplainer(feature_selection='auto', random_state=random_seed)
-    # segmenter = SegmentationAlgorithm('quickshift', kernel_size=4, max_dist=10, ratio=0.2,
-    #                                   random_seed=random_seed)  # https://kite.com/python/docs/skimage.segmentation.quickshift
-    #
-    # # # How segmentaion used in purturbation : we want 100 purturbted images. For each of these 100 images, we use a [0,1] mask to create such image. 100 * num_superpixels
-    #
-    # def explain(instance, predict_fn, labels, **kwargs):
-    #     return explainer.explain_instance(instance, predict_fn, labels, random_seed, **kwargs)
-    #
-    # mse_diff = []
-    # ssim = []
-    # for i in range(100):
-    #     explanation = explain(batch_sample['input'][i], predict_proba, labels=(1,), top_labels=10,
-    #                           num_features=10, num_samples=100, batch_size=100, distance_metric='cosine',
-    #                           model_regressor=None, random_seed=42, segmentation_fn=segmenter)
-    #     temp_org, mask_org = explanation.get_image_and_mask(batch_sample['label'][i], num_features=10, negative_only=True,
-    #                                                 positive_only=False, hide_rest=True)
-    #
-    # np.savetxt('./mask_lime_9/Ks_4_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP001_9KTrain_mask_HideRestF_negative_only_org.'
-    #            'txt', mask_org)
-    # np.savetxt('./mask_lime_9/Ks_4_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP992_10KTrain_mask_HideRestF_negative_only.txt',
-    #            mask)
-    #
-    # mask_org_bool = mask_org.astype(bool)
-    # mask_bool = mask.astype(bool)
-    #
-    # sum_diff = np.logical_xor(mask_org_bool, mask_bool).astype(int).sum()
-    # print(sum_diff)
+
+
+
