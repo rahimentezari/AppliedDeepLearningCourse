@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 
 
 def test(args, model, sess, dataset):
+    sess.run(tf.global_variables_initializer())
     print('|========= START TEST =========|')
     # test sample input
     print("|================== Samples From Test Data ==================|")
@@ -31,11 +32,51 @@ def test(args, model, sess, dataset):
     for key in keys_sample:
         batch_sample[key] = np.stack(batch_sample[key])
 
+    def _evaluate(model, saver, model_file, sess, dataset, batch_size):
+
+        # load model
+        if saver is not None and model_file is not None:
+            saver.restore(sess, model_file)
+        else:
+            raise FileNotFoundError
+        # load test set; epoch generator
+        generator = dataset.generate_example_epoch(mode='test')
+
+        accuracy = []
+        empty = False
+        while not empty:
+            # construct a batch of test examples
+            keys = ['input', 'label']
+            batch = {key: [] for key in keys}
+            for i in range(batch_size):
+                try:
+                    example = next(generator)
+                    for key in keys:
+                        batch[key].append(example[key])
+                except StopIteration:
+                    empty = True
+            # run the batch
+            if batch['input'] and batch['label']:
+                # stack and padding (if necessary)
+                for key in keys:
+                    batch[key] = np.stack(batch[key])
+                feed_dict = {}
+                feed_dict.update({model.inputs[key]: batch[key] for key in keys})
+                feed_dict.update({model.compress: False, model.is_train: False, model.pruned: True})
+                result = sess.run([model.outputs], feed_dict)
+                accuracy.extend(result[0]['acc_individual'])
+
+        results = {  # has to be JSON serialiazable
+            'accuracy': np.mean(accuracy).astype(float),
+            'accuracy_all': accuracy,
+            'num_example': len(accuracy),
+        }
+        assert results['num_example'] == dataset.dataset['test']['input'].shape[0]
+        return results
 
     def predict_proba(X):
         sample_input_generator = dataset.generate_sample(mode='test')
-        # sample_input = next(sample_input)
-        # print("sample_input", sample_input)
+
 
         keys_sample = ['input', 'label']
         batch_sample_predict_proba = {key: [] for key in keys_sample}
@@ -52,112 +93,122 @@ def test(args, model, sess, dataset):
         # feed_dict.update({model.inputs[key]: batch_sample_predict_proba[key] for key in keys_sample})
         feed_dict.update({model.inputs['input']: X, model.inputs['label']:batch_sample_predict_proba['label']})
         feed_dict.update({model.compress: False, model.is_train: False, model.pruned: True})
-        # print("feed_dict", feed_dict)
+
         result = sess.run([model.outputs], feed_dict)
         return result[0]['logits']
 
     def explain(instance, predict_fn, labels, **kwargs):
         return explainer.explain_instance(instance, predict_fn, labels, random_seed, **kwargs)
-    
+
+    random_seed = 42
+    explainer = lime.lime_image.LimeImageExplainer(feature_selection='auto', random_state=random_seed)
+    segmenter = SegmentationAlgorithm('quickshift', kernel_size=4, max_dist=10, ratio=0.2, random_seed=random_seed)
+    # # https://kite.com/python/docs/skimage.segmentation.quickshift
+    # # How segmentaion used in purturbation : we want 100 purturbted images.
+    # # For each of these 100 images, we use a [0,1] mask to create such image. 100 * num_superpixels
+
     saver = tf.train.Saver()
-    # ########################################################################################### ORG model (no pruning)
-    args.path_summary = os.path.join('/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/'
-                                     'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/logs_001',
-                                     'summary')
-    args.path_model = os.path.join('/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/'
-                                   'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/logs_001',
-                                   'model')
-    args.path_assess = os.path.join('/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/'
-                                    'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/logs_001',
-                                    'assess')
+    sum_mask_diff = []
+    for i in range(2):
+        # ####################################################################################### ORG model (no pruning)
+        args.path_summary = os.path.join('/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/'
+                                         'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/logs_001',
+                                         'summary')
+        args.path_model = os.path.join('/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/'
+                                       'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/logs_001',
+                                       'model')
+        args.path_assess = os.path.join('/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/'
+                                        'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/logs_001',
+                                        'assess')
 
-    state = tf.train.get_checkpoint_state(args.path_model)
-    print("args.path_model", args.path_model)
-    model_files_org = {int(s[s.index('itr') + 4:]): s for s in state.all_model_checkpoint_paths}
-    print("model_files_org", model_files_org)
+        state = tf.train.get_checkpoint_state(args.path_model)
+        model_files_org = {int(s[s.index('itr') + 4:]): s for s in state.all_model_checkpoint_paths}
 
-    itrs = [sorted(model_files_org.keys())[9]]  # ### acc = 99.12%
-    print("itrs", itrs)
+        itr = sorted(model_files_org.keys())[9] # ### acc = 99.12%
+        saver.restore(sess, model_files_org[itr])
 
-    # Subset of iterations.
-    itr_subset = itrs
-    assert itr_subset
-    # Evaluate.
-    acc = []
-    for itr in itr_subset:
-        print('evaluation: {} | itr-{}'.format(dataset.datasource, itr))
-        # run evaluate and/or cache
-        result = cache_json(
-            os.path.join(args.path_assess, dataset.datasource, 'itr-{}.json'.format(itr)),
-            lambda: _evaluate(
-                model, saver, model_files[itr], sess,
-                dataset, args.batch_size),
-            makedir=True)
-        # print('Accuracy: {:.5f} (#examples:{})'.format(result['accuracy'], result['num_example']))
-        acc.append(result['accuracy'])
-        # print(result) this will print accuracy along with the tf.equal(label, output_class)
-        # print(_evaluate(
-        #     model, saver, model_files_org[itr], sess,
-        #     dataset, args.batch_size))
-    print('Max: {:.5f}, Min: {:.5f} (#Eval: {})'.format(max(acc), min(acc), len(acc)))
-    print('Error: {:.3f} %'.format((1 - max(acc)) * 100))
+        # ### Gets the explanation
+        explanation = explain(batch_sample['input'][i], predict_proba, labels=(1,), top_labels=10,
+                              num_features=10, num_samples=100, batch_size=100, distance_metric='cosine',
+                              model_regressor=None, random_seed=42, segmentation_fn=segmenter)
+        temp_org, mask_org = explanation.get_image_and_mask(batch_sample['label'][i], num_features=10, negative_only=True,
+                                                    positive_only=False, hide_rest=True)
+        mask_path = './logs/mask_lime_1K'
+        if not os.path.exists(mask_path):
+            os.mkdir(mask_path)
+        np.savetxt(
+            mask_path + '/ORG_Ks_4_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP10_9KTrain_mask_HideRestF_negative_only' +
+            str(batch_sample['label'][i]) + "_" + str(i) + '.txt',
+            mask_org)
+        # ################################################################################################# Pruned model
+        sess.run(tf.global_variables_initializer())
+        state = tf.train.get_checkpoint_state(args.path_model)
+        model_files = {int(s[s.index('itr')+4:]): s for s in state.all_model_checkpoint_paths}
 
-    # ##################################################################################################### Pruned model
-    state = tf.train.get_checkpoint_state(args.path_model)
-    print("args.path_model", args.path_model)
-    model_files = {int(s[s.index('itr')+4:]): s for s in state.all_model_checkpoint_paths}
-    print("model_files", model_files)
+        itr = sorted(model_files.keys())[10]
+        saver.restore(sess, model_files[itr])
 
-    itrs = [sorted(model_files.keys())[0]]
-    print("itrs", itrs)
+        # Subset of iterations.
+        itr_subset = [itr]
+        assert itr_subset
+        # Evaluate.
+        acc = []
+        for itr in itr_subset:
+            print('evaluation: {} | itr-{}'.format(dataset.datasource, itr))
+            # run evaluate and/or cache
+            result = cache_json(
+                os.path.join(args.path_assess, dataset.datasource, 'itr-{}.json'.format(itr)),
+                lambda: _evaluate(
+                    model, saver, model_files[itr], sess,
+                    dataset, args.batch_size),
+                makedir=True)
+            # print('Accuracy: {:.5f} (#examples:{})'.format(result['accuracy'], result['num_example']))
+            acc.append(result['accuracy'])
+            # print(result) this will print accuracy along with the tf.equal(label, output_class)
+            # print(_evaluate(
+            #         model, saver, model_files[itr], sess,
+            #         dataset, args.batch_size))
+        print('Max: {:.5f}, Min: {:.5f} (#Eval: {})'.format(max(acc), min(acc), len(acc)))
+        print('Error: {:.3f} %'.format((1 - max(acc))*100))
 
-    # Subset of iterations.
-    itr_subset = itrs
-    assert itr_subset
-    # Evaluate.
-    acc = []
-    for itr in itr_subset:
-        print('evaluation: {} | itr-{}'.format(dataset.datasource, itr))
-        # run evaluate and/or cache
-        result = cache_json(
-            os.path.join(args.path_assess, dataset.datasource, 'itr-{}.json'.format(itr)),
-            lambda: _evaluate(
-                model, saver, model_files[itr], sess,
-                dataset, args.batch_size),
-            makedir=True)
-        # print('Accuracy: {:.5f} (#examples:{})'.format(result['accuracy'], result['num_example']))
-        acc.append(result['accuracy'])
-        # print(result) this will print accuracy along with the tf.equal(label, output_class)
-        # print(_evaluate(
-        #         model, saver, model_files[itr], sess,
-        #         dataset, args.batch_size))
-    print('Max: {:.5f}, Min: {:.5f} (#Eval: {})'.format(max(acc), min(acc), len(acc)))
-    print('Error: {:.3f} %'.format((1 - max(acc))*100))
+        # ### Gets the explanation
+        explanation = explain(batch_sample['input'][i], predict_proba, labels=(1,), top_labels=10,
+                              num_features=10, num_samples=100, batch_size=100, distance_metric='cosine',
+                              model_regressor=None, random_seed=42, segmentation_fn=segmenter)
+        temp, mask = explanation.get_image_and_mask(batch_sample['label'][i], num_features=10, negative_only=True,
+                                                    positive_only=False, hide_rest=True)
 
+        np.savetxt(
+            mask_path + '/Pruned_Ks_4_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP991_1KTrain_mask_HideRestF_negative_only' +
+            str(batch_sample['label'][i]) + "_" + str(i) + '.txt',
+            mask)
 
+        # ### compare the explanations for only mask
+        mask_org_bool = mask_org.astype(bool)
+        mask_bool = mask.astype(bool)
 
-
-
-
-
-
-
-
-
-
-
-
-
+        one_sample_diff = np.logical_xor(mask_org_bool, mask_bool).astype(int).sum()
+        print("i, one_sample_diff", i, one_sample_diff)
+        sum_mask_diff.append(one_sample_diff)
+    mean = statistics.mean(sum_mask_diff)
+    std = statistics.stdev(sum_mask_diff)
+    print("LIST_sum_mask_diff", sum_mask_diff)
+    print("mean, std", mean, std)
 
 
 
-    # random_seed = 42
-    # # random_seed = np.random.seed(42)# if use this, error with Segmentation(line290): TypeError: an integer is required
-    # explainer = lime.lime_image.LimeImageExplainer(feature_selection='auto', random_state=random_seed)
-    # segmenter = SegmentationAlgorithm('quickshift', kernel_size=4, max_dist=10, ratio=0.2, random_seed=random_seed) # https://kite.com/python/docs/skimage.segmentation.quickshift
-    # # # How segmentaion used in purturbation : we want 100 purturbted images. For each of these 100 images, we use a [0,1] mask to create such image. 100 * num_superpixels
+
     #
-
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
     #
     # for i in range(100):
     #     print("== == == == == purturbation started!== == == == ==")
@@ -199,46 +250,3 @@ def test(args, model, sess, dataset):
     #
     # sum_diff = np.logical_xor(mask_org_bool, mask_bool).astype(int).sum()
     # print(sum_diff)
-
-
-def _evaluate(model, saver, model_file, sess, dataset, batch_size):
-
-    # load model
-    if saver is not None and model_file is not None:
-        saver.restore(sess, model_file)
-    else:
-        raise FileNotFoundError
-    # load test set; epoch generator
-    generator = dataset.generate_example_epoch(mode='test')
-
-    accuracy = []
-    empty = False
-    while not empty:
-        # construct a batch of test examples
-        keys = ['input', 'label']
-        batch = {key: [] for key in keys}
-        for i in range(batch_size):
-            try:
-                example = next(generator)
-                for key in keys:
-                    batch[key].append(example[key])
-            except StopIteration:
-                empty = True
-        # run the batch
-        if batch['input'] and batch['label']:
-            # stack and padding (if necessary)
-            for key in keys:
-                batch[key] = np.stack(batch[key])
-            feed_dict = {}
-            feed_dict.update({model.inputs[key]: batch[key] for key in keys})
-            feed_dict.update({model.compress: False, model.is_train: False, model.pruned: True})
-            result = sess.run([model.outputs], feed_dict)
-            accuracy.extend(result[0]['acc_individual'])
-
-    results = { # has to be JSON serialiazable
-        'accuracy': np.mean(accuracy).astype(float),
-        'accuracy_all': accuracy,
-        'num_example': len(accuracy),
-    }
-    assert results['num_example'] == dataset.dataset['test']['input'].shape[0]
-    return results
