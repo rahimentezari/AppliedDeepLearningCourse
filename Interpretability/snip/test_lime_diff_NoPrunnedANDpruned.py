@@ -114,19 +114,16 @@ def test(args, model, sess, dataset):
     # for i in range(100):
     #     # ####################################################################################### ORG model (no pruning)
     #     args.path_summary = os.path.join('/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/'
-    #                                      'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/logs_001',
-    #                                      'summary')
+    #                                      'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/'
+    #                                      'logs_0_org/summary')
     #     args.path_model = os.path.join('/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/'
-    #                                    'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/logs_001',
-    #                                    'model')
-    #     args.path_assess = os.path.join('/home/r/raent/Rahim/NetworkCompression/Single-ModeCompression/Code/'
-    #                                     'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/logs_001',
-    #                                     'assess')
+    #                                    'Interpretability/LIME/AppliedDeepLearningCourse/Interpretability/snip/'
+    #                                    'logs_0_org/model')
     #
     #     state = tf.train.get_checkpoint_state(args.path_model)
     #     model_files_org = {int(s[s.index('itr') + 4:]): s for s in state.all_model_checkpoint_paths}
     #
-    #     itr = sorted(model_files_org.keys())[9] # ### acc = 99.12%
+    #     itr = sorted(model_files_org.keys())[10] # ### acc = 99.12%
     #     saver.restore(sess, model_files_org[itr])
     #
     #     # ### Gets the explanation
@@ -136,11 +133,11 @@ def test(args, model, sess, dataset):
     #     temp_org, mask_org = explanation.get_image_and_mask(batch_sample['label'][i], num_features=10, negative_only=True,
     #                                                 positive_only=False, hide_rest=True)
     #     masks_org.append(mask_org)
-    #     mask_path = './logs/mask_lime_1K'
+    #     mask_path = './logs/mask_lime_0K'
     #     if not os.path.exists(mask_path):
     #         os.mkdir(mask_path)
     #     np.savetxt(
-    #         mask_path + '/ORG_Ks_4_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP001_9KTrain_mask_HideRestF_negative_only' +
+    #         mask_path + '/ORG_Ks_4_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP_Org_10KTrain_mask_HideRestF_negative_only' +
     #         str(batch_sample['label'][i]) + "_" + str(i) + '.txt',
     #         mask_org)
     # with open(mask_path + '/masks_org.pk', 'wb') as fp:
@@ -149,9 +146,9 @@ def test(args, model, sess, dataset):
     for i in range(100):
         state = tf.train.get_checkpoint_state(args.path_model)
         model_files = {int(s[s.index('itr')+4:]): s for s in state.all_model_checkpoint_paths}
-
-        itr = sorted(model_files.keys())[0]
+        itr = sorted(model_files.keys())[10]
         saver.restore(sess, model_files[itr])
+
 
         # ### Gets the explanation
         explanation = explain(batch_sample['input'][i], predict_proba, labels=(1,), top_labels=10,
@@ -161,11 +158,11 @@ def test(args, model, sess, dataset):
                                                    positive_only=False, hide_rest=True)
         masks_pruned.append(mask)
 
-        mask_path = './logs/mask_lime_0K'
+        mask_path = './logs/mask_lime_10K'
         if not os.path.exists(mask_path):
             os.mkdir(mask_path)
         np.savetxt(
-            mask_path + '/Pruned_Ks_4_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP99_0KTrain_mask_HideRestF_negative_only' +
+            mask_path + '/Pruned_Ks_4_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP992_10KTrain_mask_HideRestF_negative_only' +
             str(batch_sample['label'][i]) + "_" + str(i) + '.txt',
             mask)
 
