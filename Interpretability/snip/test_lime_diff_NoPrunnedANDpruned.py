@@ -202,49 +202,20 @@ def test(args, model, sess, dataset):
     itr = sorted(model_files_org.keys())[10]
     saver.restore(sess, model_files_org[itr])
 
-    with open(mask_path + '/masks_org.pk', 'rb') as fp:
-        masks_org = pickle.load(fp)
+    mask_path = './logs/mask_lime_10K'
+    with open(mask_path + '/masks_pruned.pk', 'rb') as fp:
+        masks_pruned = pickle.load(fp)
+    a = predict_probability_softmax(np.asarray(masks_pruned).reshape(100, 32, 32, 1))
 
-    a = predict_probability_softmax(mask)
-    print(a)
-    #     masks_pruned.append(mask)
-    #
-    #     mask_path = './logs/mask_lime_10K'
-    #     if not os.path.exists(mask_path):
-    #         os.mkdir(mask_path)
-    #     # np.savetxt(
-    #     #     mask_path + '/Pruned_Ks_4_Md_10_ratio_0.2_Ns100_Tl10_Nf10_SNIP50_10KTrain_mask_HideRestF_negative_only' +
-    #     #     str(batch_sample['label'][i]) + "_" + str(i) + '.txt',
-    #     #     mask, fmt='%i')
-    #
-    # # ### compare the explanations for only mask
-    # with open(mask_path + '/masks_org.pk', 'rb') as fp:
-    #     masks_org = pickle.load(fp)
-    # for x, y in zip(masks_org, masks_pruned):
-    #     mask_org_bool = x.astype(bool)
-    #     mask_bool = y.astype(bool)
-    #     one_sample_diff = np.logical_xor(mask_org_bool, mask_bool).astype(int).sum()
-    #     sum_mask_diff.append(one_sample_diff)
-    # print("LIST_sum_mask_diff", sum_mask_diff)
-    # mean = statistics.mean(sum_mask_diff)
-    # std = statistics.stdev(sum_mask_diff)
-    # print("mean, std", mean, std)
-    # # remove bad LIME Org
-    # bad_org_list = [3, 13, 55, 43, 77, 18, 51, 90, 4, 6, 42, 48, 49, 8, 15, 23, 45, 53, 59, 17, 36, 70, 79, 86, 97, 12,
-    #                 16, 62]
-    # sum_mask_diff_removedBad = []
-    # for i in range(100):
-    #     if i not in bad_org_list:
-    #         sum_mask_diff_removedBad.append(sum_mask_diff[i])
-    #
-    # #
-    # # for x in sum_mask_diff:
-    # #     if x.index() not in bad_org_list:
-    # #         sum_mask_diff_removedBad.append(x)
-    # print(len(sum_mask_diff_removedBad))
-    # mean = statistics.mean(sum_mask_diff_removedBad)
-    # std = statistics.stdev(sum_mask_diff_removedBad)
-    # print("mean, std", mean, std)
+    penalty = []
+    for i in range(100):
+        label = batch_sample['label'][i]
+        penalty.append(1 - (a[i][label]))
+    print(penalty)
+
+    mean = statistics.mean(penalty)
+    std = statistics.stdev(penalty)
+    print("mean, std", mean, std)
 
 
 

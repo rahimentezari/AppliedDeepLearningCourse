@@ -106,8 +106,8 @@ class LeNet5(object):
                  ):
         self.name = 'lenet5'
         # self.input_dims = [28, 28, 1] # height, width, channel
-        self.input_dims = [32, 32, 3]  # height, width, channel # zero padding
-        # self.input_dims = [32, 32, 1]  # height, width, channel # zero padding
+        # self.input_dims = [32, 32, 3]  # height, width, channel # zero padding
+        self.input_dims = [32, 32, 1]  # height, width, channel # zero padding
         self.inputs = self.construct_inputs()
         self.weights_bp = self.construct_weights(initializer_w_bp, initializer_b_bp, False, 'bp')
         self.weights_ap = self.construct_weights(initializer_w_ap, initializer_b_ap, True, 'ap')
@@ -135,8 +135,8 @@ class LeNet5(object):
         }
         weights = {}
         with tf.variable_scope(scope):
-            weights['w1'] = tf.get_variable('w1', [5, 5, 3, 6], **w_params)
-            # weights['w1'] = tf.get_variable('w1', [5, 5, 1, 6], **w_params)
+            # weights['w1'] = tf.get_variable('w1', [5, 5, 3, 6], **w_params)
+            weights['w1'] = tf.get_variable('w1', [5, 5, 1, 6], **w_params)
             weights['w2'] = tf.get_variable('w2', [5, 5, 6, 16], **w_params)
             # weights['w3'] = tf.get_variable('w3', [256, 120], **w_params)
             weights['w3'] = tf.get_variable('w3', [400, 120], **w_params)
