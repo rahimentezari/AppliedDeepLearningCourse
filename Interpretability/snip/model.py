@@ -93,9 +93,11 @@ class Model(object):
         output_correct_prediction = tf.equal(self.inputs['label'], output_class)
         output_accuracy_individual = tf.cast(output_correct_prediction, tf.float32)
         output_accuracy = tf.reduce_mean(output_accuracy_individual)
+        output_softmax = tf.nn.softmax(logits, name=None)
         self.outputs = {
             'prediction': output_class,
             'logits': logits,
+            'logits_softmax': output_softmax,
             'los': opt_loss,
             'acc': output_accuracy,
             'acc_individual': output_accuracy_individual,

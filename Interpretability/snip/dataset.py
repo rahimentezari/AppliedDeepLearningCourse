@@ -11,9 +11,17 @@ def twodnopad_threedpad(x):
     features_3d = np.zeros((x.shape[0], 32, 32, 3))
     for i in range(x.shape[0]):
         feature_pad = np.pad(x[i], ((2, 2), (2, 2), (0, 0)), 'constant')
-        feature_3d_pad = cv2.cvtColor(feature_pad, cv2.COLOR_GRAY2RGB)
-        features_3d[i] = feature_3d_pad
+        # feature_3d_pad = cv2.cvtColor(feature_pad, cv2.COLOR_GRAY2RGB)
+        # features_3d[i] = feature_3d_pad
+        features_3d[i] = feature_pad  ## 2d: commen above two lines
     return features_3d
+
+# def twodnopad_threedpad(x):
+#     features_3d = np.zeros((x.shape[0], 32, 32, 1))
+#     for i in range(x.shape[0]):
+#         feature_pad = np.pad(x[i], ((2, 2), (2, 2), (0, 0)), 'constant')
+#         features_3d[i] = feature_pad  ## 2d: commen above function
+#     return features_3d
 
 
 class Dataset(object):
